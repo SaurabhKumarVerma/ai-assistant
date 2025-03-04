@@ -3,20 +3,21 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { ClerkStrategy } from './clerk.strategy';
 import { UserEntity } from './user.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TokenService } from './token.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      secret: process.env.ACCESS_TOKEN_SECRET,
+      signOptions: { expiresIn: '15m' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, ClerkStrategy],
-  exports: [AuthService],
+  providers: [AuthService, TokenService, JwtStrategy],
+  exports: [AuthService, TokenService],
 })
 export class AuthModule {}
